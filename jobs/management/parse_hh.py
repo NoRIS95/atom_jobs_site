@@ -1,38 +1,22 @@
+from django.core.management.base import BaseCommand, CommandError
+
 import requests
 import json
 import time
-import os, os.path
+import os, sys
 import math
-import pandas as pd
-from dataclasses import dataclass
-from whoosh import index
-from whoosh.fields import Schema, ID, TEXT
-
-
-
-@dataclass
-class Vacation:
-	id: str
-	name: str
-	city: str
-	street: str
-	requirements: str
-	responsibility: str
-	schedule: str
-	prof_roles: list
-	experience: str
-	url: str
-	desc_vac: str
-	language_dict: dict
-
-
+import pickle
+from jobs.models import Job
+import django
 
 def check_existence_key(structure, key_name):
 	if structure[key_name] is not None:
 		return structure[key_name]
 	return ' '
 
-def getVacations(employer_id=5912977, pause=0.33):
+EMPLOYER_ID = 5912977
+
+def getVacations(employer_id=5912977, request_pause_seconds=0.33):
 	url = 'https://api.hh.ru/vacancies'
 	params = {'employer_id': employer_id}
 	response = requests.get(url, params)
@@ -44,7 +28,7 @@ def getVacations(employer_id=5912977, pause=0.33):
 	###
 	per_page = data['per_page']
 	pages = math.ceil(found/per_page)
-	time.sleep(pause)
+	time.sleep(request_pause_seconds)
 	for i in range(pages + 1):
 		params = {'page': i, "per_page": per_page, 'employer_id': employer_id}
 		response = requests.get(url, params=params)
@@ -53,7 +37,7 @@ def getVacations(employer_id=5912977, pause=0.33):
 		for vacation in data['items']:
 			if vacation['type']['id'] == 'open' and vacation['archived'] == False:
 				vac_id = check_existence_key(vacation, 'id')
-				vac_name = check_existence_key(vacation, 'id')
+				vac_name = check_existence_key(vacation, 'name')
 				vac_address = check_existence_key(vacation, 'address')
 				profes_roles = []
 				vac_city = ' '
@@ -102,48 +86,37 @@ def getVacations(employer_id=5912977, pause=0.33):
 					###
 					###
 					###
-				vac = Vacation(id=vac_id, name=vac_name, city=vac_city, \
+				vac = Job(hh_id=vac_id, name=vac_name, city=vac_city, \
 						street=vac_street, requirements=requirements, \
 						responsibility=responsibility, schedule=schedule, \
-						prof_roles=profes_roles, experience=experience, \
-						url=url_hh, desc_vac=description, \
-						language_dict=languages
+						prof_roles=json.dumps(profes_roles, ensure_ascii=False),
+						experience=experience, \
+						url=url_hh, description=description, \
+						languages=json.dumps(languages, ensure_ascii=False)
 						)
-				time.sleep(pause)
 				vacations.append(vac)
+		time.sleep(request_pause_seconds)
 	return vacations						
 
 
-if __name__ == '__main__':
-	if not os.path.exists('indexdir'):
-		os.mkdir('indexdir')
-		schema = Schema(id = ID(unique=True), name=TEXT, city=TEXT, \
-			street=TEXT, requirements=TEXT, responsibility=TEXT, \
-			schedule=TEXT, prof_roles=TEXT, experience=TEXT,\
-			url=TEXT, desc_vac=TEXT, language_dict=TEXT)
-		ix = index.create_in('indexdir', schema)
-	vacations = getVacations()
-	# print(vacations)
-	ix = index.open_dir('indexdir')
-	for vacation in vacations:
-		print(vacation)
-		writer = ix.writer()
-		languages = vacation.language_dict
-		str_languages = json.dumps(languages, ensure_ascii=False)
-		prof_roles = vacation.prof_roles
-		str_prof_roles = json.dumps(prof_roles, ensure_ascii=False)
-		experience = vacation.experience
-		vac_id = vacation.id
-		vac_name = vacation.name
-		city = vacation.city
-		street = vacation.street
-		requirements = vacation.requirements
-		responsibility = vacation.responsibility
-		schedule = vacation.schedule
-		url = vacation.url
-		desc_vac = vacation.desc_vac
-		writer.add_document(name=vac_name, id=vac_id, city=city, \
-			street=street, requirements=requirements, responsibility=responsibility, \
-			schedule=schedule, prof_roles=str_prof_roles, experience=experience, \
-			url=url, desc_vac=desc_vac, language_dict=str_languages)
-	writer.commit()
+class Command(BaseCommand):
+	help = 'Parse and save hh jobs to db'
+
+	def handle(self, *args, **kwargs):
+		parser_jobs = getVacations()
+		# with open('vacations.pkl', 'wb') as f:
+		# 	pickle.dump(vacations, f)
+		# with open('vacations.pkl', 'rb') as f:
+		# 	parser_jobs = pickle.load(f)
+		db_jobs = Job.objects.all()
+		db_job_ids = {job.hh_id for job in db_jobs}
+		parser_job_ids = {job.hh_id for job in parser_jobs}
+
+		jobs_to_remove = [job for job in db_jobs if job.hh_id not in parser_job_ids] # вакансии, которых уже нет на HH
+		jobs_to_add = [job for job in parser_jobs if job.hh_id not in db_job_ids] # вакансии, которых нет в базе
+		# TODO хорошо бы ещё остальные вакансии из базы обновлять в соотвествии с их актуальным описанием на hh
+		for job in jobs_to_remove:
+			job.delete()
+
+		for job in jobs_to_add:
+			job.save()
