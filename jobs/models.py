@@ -25,6 +25,7 @@ class Response(models.Model):
 	surname = models.CharField(max_length=30)
 	lastname = models.CharField(max_length=30)
 	e_mail = models.CharField(max_length=60)
+	phone = models.CharField(max_length=60)
 	text = models.TextField()
 	job = models.ForeignKey(Job, on_delete=models.CASCADE)
 	cv = models.FileField(upload_to='cv/')

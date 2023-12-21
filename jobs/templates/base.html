@@ -1,16 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{% block title %}{% endblock %}</title>
-</head>
-<body>
-<div id="content">
-    {% block content %}
-    {% endblock %}
-</div>
-<div id="sidebar">
-    <h2>АТОМ</h2>
-    <p>Сайт вакансий компании</p>
-</div>
-</body>
-</html>
+<form role="search" method="get" id="searchform" action="{% url 'haystack_search' %}">
+  <input type="search" name="q" placeholder="ищи" required>
+  <button type="submit"><span class="ion-ios-search-strong"></span></button>
+</form>
