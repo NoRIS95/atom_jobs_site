@@ -20,17 +20,34 @@ from rest_framework import status
 # Create your views here.
 from django.http import HttpResponse
 import json
+from haystack.query import SearchQuerySet, SQ
 
-class JobAPIView(generics.RetrieveUpdateDestroyAPIView, CreateModelMixin, LoginRequiredMixin):
+class JobAPIView(generics.ListAPIView):
 	queryset = Job.objects.all()
 	serializer_class = JobSerializer
-	parser_classes = MultiPartParser, FormParser
 
 	def get(self, request):
 		# requests.get('http://localhost:8000/api/v1/locations/')
 		queryset = Job.objects.all()
 		return Response(JobSerializer(queryset, many=True, context={'request': request}).data,
 			status=status.HTTP_200_OK)
+
+class JobSearchAPIView(generics.ListAPIView):
+	serializer_class = JobSerializer
+
+	def get(self, request):
+		# requests.get('http://localhost:8000/api/v1/locations/')
+		queryset = self.get_queryset()
+		return Response(JobSerializer(queryset, many=True, context={'request': request}).data,
+			status=status.HTTP_200_OK)
+
+	def get_queryset(self):
+		query = self.request.GET.get('q', '')
+		return SearchQuerySet().models(Job).filter(SQ(name=query) |\
+			SQ(requirements=query) |\
+			SQ(responsibility=query) |\
+			SQ(prof_roles=query) |\
+			SQ(description=query)).load_all()
 		
 
 	# def post(self, request):

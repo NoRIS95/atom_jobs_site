@@ -1,6 +1,9 @@
 from __future__ import unicode_literals
 from django.db import models
 
+def resume_file_path(instance, filename):
+	return f'resumes/{instance.hh_id}/{filename}'
+
 # Create your models here.
 class Job(models.Model):
 	hh_id = models.CharField(max_length=60)
