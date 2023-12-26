@@ -25,10 +25,10 @@ class Job(models.Model):
 
 class Response(models.Model):
 	name = models.CharField(max_length=20)
-	surname = models.CharField(max_length=30)
-	lastname = models.CharField(max_length=30)
-	e_mail = models.CharField(max_length=60)
-	phone = models.CharField(max_length=60)
+	surname = models.CharField(max_length=30, null=True)
+	lastname = models.CharField(max_length=30, null=True)
+	e_mail = models.CharField(max_length=60, null=True)
+	phone = models.CharField(max_length=60, null=True)
 	text = models.TextField()
 	job = models.ForeignKey(Job, on_delete=models.CASCADE)
 	cv = models.FileField(upload_to='cv/')

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Job
+from .models import Job, Response
 import json
 
 class JobSerializer(serializers.ModelSerializer):
@@ -18,3 +18,8 @@ class JobSerializer(serializers.ModelSerializer):
 	def prof_roles(self, instance):
 		# import pdb; pdb.set_trace()
 		return json.loads(instance.prof_roles)
+
+class ResponseAPISerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Response
+		fields = ('name', 'surname','lastname', 'e_mail', 'phone', 'text', 'job', 'cv')

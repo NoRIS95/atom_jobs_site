@@ -4,9 +4,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.conf import settings
 from django.contrib import messages
-from jobs.models import Job
+from jobs.models import Job, Response
 from django.contrib.auth.models import User
-from jobs.serializers import JobSerializer
+from jobs.serializers import JobSerializer, ResponseAPISerializer
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.http import JsonResponse
@@ -48,7 +48,37 @@ class JobSearchAPIView(generics.ListAPIView):
 			SQ(responsibility=query) |\
 			SQ(prof_roles=query) |\
 			SQ(description=query)).load_all()
-		
+
+class ResponseAPIView(generics.RetrieveUpdateDestroyAPIView, CreateModelMixin, LoginRequiredMixin):
+	serializer_class = ResponseAPISerializer
+	# queryset = Response.objects.all()
+
+	def post(self, request):
+		# import pdb; pdb.set_trace()
+		serializer = self.serializer_class(data=request.data)
+		name = request.data.get('name')
+		surname = request.data.get('surname')
+		lastname = request.data.get('lastname')
+		e_mail = request.data.get('e_mail')
+		phone = request.data.get('phone')
+		cv = request.FILES.get('cv', False)
+		cv.name = f"{surname}_{name}.pdf"
+		Response.objects.create(name=name, surname=surname, lastname=lastname, e_mail=e_mail, phone=phone)
+		return redirect("/jobboard", status=status.HTTP_200_OK)
+
+
+	# def post(self, request):
+	# 	# requests.post('http://localhost:8000/api/v1/locations/', data={'n_seats': 32, 'name': "Test"}, files={'photo': io.getvalue()})
+	# 	loc_name = request.data.get('name')
+	# 	photo = request.FILES.get('photo', False)
+	# 	n_seats = int(request.data.get('n_seats'))
+	# 	owner_id = request.user
+	# 	locations_cnt = len(Location.objects.filter(owner_id=owner_id).all())
+	# 	# photo_extension = photo.name.split('.')[-1]
+	# 	photo.name = f"{owner_id}_{locations_cnt}.jpg"
+	# 	Location.objects.create(name=loc_name, photo=photo, n_seats=n_seats, owner_id=owner_id)
+	# 	return redirect("/dashboard", status=status.HTTP_200_OK)
+
 
 	# def post(self, request):
 	# 	# requests.post('http://localhost:8000/api/v1/locations/', data={'n_seats': 32, 'name': "Test"}, files={'photo': io.getvalue()})
