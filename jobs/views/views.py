@@ -3,27 +3,24 @@ from rest_framework import mixins, viewsets
 from haystack.query import SearchQuerySet
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .models import Job
+from jobs.models import Job
 from django.views.generic import ListView
 import os, os.path
 from whoosh import index, qparser
-# from products.serializers import ProductSearchSerializer 
-# from .forms import EmailPostForm, CommentForm, SearchForm
 
-# class ProductSearchViewSet(mixins.ListModelMixin, viewsets.GenericViewSet): 
-#   serializer_class = ProductSearchSerializer 
-  
-#   def get_queryset(self, *args, **kwargs):
-#     params = self.request.query_params 
-#     query = SearchQuerySet().all()
-#     keywords = params.get('q') 
-#     if keywords: 
-#       query = query.filter(Q(title=keywords) | Q (created_by=keywords)) 
-      
-#     if params.get("created_by", None): 
-#       query = query.filter(created_by__in=params.get("created_by").split(",")) 
-      
-#     return query
+class SearchResultsView(ListView):
+
+    model = Job
+
+    template_name = 'search_results.html'
+
+    def get_queryset(self):
+
+        query = self.request.GET.get('q')
+
+        object_list = Job.objects.filter(Q(name__icontains=query) | Q(requirements__icontains=query)\
+         | Q(prof_roles__icontains=query))
+        return object_list
 
 
 def post_search(request):
@@ -41,9 +38,6 @@ def post_search(request):
                    'cd': cd,
                    'results': results,
                    'total_results': total_results})
-
-
-
 
 
 class JobListView(ListView):
@@ -69,13 +63,3 @@ def job_list(request):
                   'job/list.html',
                   {'page': page,
                    'jobs': jobs})
-
-
-    # jobs = Job.objects.all()
-
-
-# def job_list(request):
-#     object_list = Job.objects.all()
-#     jobs = Job.objects.all()
-#     return render(request, 'job/list.html', {'jobs': jobs})
-

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %} 
+
+
+<style type="text/css">
+    #visualization {
+      width: 100wh;
+      height: auto;
+      margin-top: 3rem;
+      border: 2px solid #88c241;
+    }
+/*    .text {
+    text-align:  center;*/
+   }
+</style>
+<main class="main">
+  <div id="visualization" class="table-body">
+    <h1 style="text-align: center;">{{name}}</h1>
+      <section class="map-wrapper"> 
+      <section class="map-wrapper"> 
+  <div style="text-align: center;">{{city}}</div>
+  </div>
+  {{description|safe}}
+
+  {{requirements|safe}}
+
+<!--   {{schedule}}  
+
+  {{responsibility}}
+
+  {{languages}}
+
+  {{prof_roles}} -->
+
+   <section class="table-title">
+
+    <div class="container main">
+      <!--Simple Form-->
+      <h2 class="my-4">Откликнуться</h2>
+      <form method="post" action={% url 'submit' job_id %} enctype="multipart/form-data" class="form">
+          <label for="name" class="">Имя</label>
+            <input type="text" id="name" name="name"><br>
+          <label for="name" class="">Фамилия</label>
+            <input type="text" id="lastname" name="lastname"><br>
+          <label for="name" class="">email</label>
+            <input type="text" id="email" name="email"><br>
+          <label for="name" class="">Сопроводительное письмо</label>
+            <input type="text" id="application_text" name="application_text"><br>
+          <label for="name" class="">Резюме</label>
+            <input type="file" id="cv" name="cv" class="inputfile"><br>
+            <button class="btn btn-dark my-4 button" type="submit">Отправить</button>
+      </form>
+    </div>
+    
+  </section>
+</main>
+
+{% endblock %}

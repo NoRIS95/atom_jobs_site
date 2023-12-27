@@ -51,10 +51,8 @@ class JobSearchAPIView(generics.ListAPIView):
 
 class ResponseAPIView(generics.RetrieveUpdateDestroyAPIView, CreateModelMixin, LoginRequiredMixin):
 	serializer_class = ResponseAPISerializer
-	# queryset = Response.objects.all()
 
 	def post(self, request):
-		# import pdb; pdb.set_trace()
 		serializer = self.serializer_class(data=request.data)
 		name = request.data.get('name')
 		surname = request.data.get('surname')
@@ -65,40 +63,3 @@ class ResponseAPIView(generics.RetrieveUpdateDestroyAPIView, CreateModelMixin, L
 		cv.name = f"{surname}_{name}.pdf"
 		Response.objects.create(name=name, surname=surname, lastname=lastname, e_mail=e_mail, phone=phone)
 		return redirect("/jobboard", status=status.HTTP_200_OK)
-
-
-	# def post(self, request):
-	# 	# requests.post('http://localhost:8000/api/v1/locations/', data={'n_seats': 32, 'name': "Test"}, files={'photo': io.getvalue()})
-	# 	loc_name = request.data.get('name')
-	# 	photo = request.FILES.get('photo', False)
-	# 	n_seats = int(request.data.get('n_seats'))
-	# 	owner_id = request.user
-	# 	locations_cnt = len(Location.objects.filter(owner_id=owner_id).all())
-	# 	# photo_extension = photo.name.split('.')[-1]
-	# 	photo.name = f"{owner_id}_{locations_cnt}.jpg"
-	# 	Location.objects.create(name=loc_name, photo=photo, n_seats=n_seats, owner_id=owner_id)
-	# 	return redirect("/dashboard", status=status.HTTP_200_OK)
-
-
-	# def post(self, request):
-	# 	# requests.post('http://localhost:8000/api/v1/locations/', data={'n_seats': 32, 'name': "Test"}, files={'photo': io.getvalue()})
-	# 	loc_name = request.data.get('name')
-	# 	photo = request.FILES.get('photo', False)
-	# 	n_seats = int(request.data.get('n_seats'))
-	# 	owner_id = request.user
-	# 	locations_cnt = len(Location.objects.filter(owner_id=owner_id).all())
-	# 	# photo_extension = photo.name.split('.')[-1]
-	# 	photo.name = f"{owner_id}_{locations_cnt}.jpg"
-	# 	Location.objects.create(name=loc_name, photo=photo, n_seats=n_seats, owner_id=owner_id)
-	# 	return redirect("/dashboard", status=status.HTTP_200_OK)
-
-	# def delete(self, request, id):
-	# 	# requests.delete('http://localhost:8000/api/v1/locations/10')
-	# 	loc_id = int(id)
-	# 	try:
-	# 		obj = Location.objects.get(id=loc_id)
-	# 		obj.delete()
-	# 		return HttpResponse('Location deleted', status=status.HTTP_200_OK)		
-	# 	except:
-	# 		msg = {'msg': 'not found error'}
-	# 		return HttpResponse(msg, status.HTTP_404_NOT_FOUND)

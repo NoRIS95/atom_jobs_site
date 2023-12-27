@@ -1,0 +1,15 @@
+{%load static %}
+<!DOCTYPE html>
+<form action="{% url 'search_results' %}" method="get"><input name="q" type="text" placeholder="Search...">
+</form>
+<html lang="ru">
+      {% include 'head.html' %}
+      <body>
+      <div class="wrapper">
+        {% include 'header.html' %}
+        {% block content %}{% endblock %}
+        {% include 'footer.html' %}
+        {% block extra_scripts %} {% endblock %}
+      </div>
+      </body>
+</html>

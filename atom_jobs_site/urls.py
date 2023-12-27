@@ -22,11 +22,10 @@ from jobs.views.api import JobAPIView, JobSearchAPIView
 from jobs.views.pages.job import JobPageView
 from jobs.views.jobboard import JobboardView
 from jobs.views.forms.submit import SubmitFormView
-# from jobs.views.send_resume import SendResumeView
+from jobs.views.views import SearchResultsView
 from django.conf import settings
-# from jobs import views
 from jobs.views import views
-# from atom_jobs.views.send_resume import SendResumeView
+
 
 
 urlpatterns = [
@@ -40,20 +39,6 @@ urlpatterns = [
     # re_path(r'^jobs/', include(('urls', 'jobs'),namespace='jobs')),
     # re_path(r'^search/$', views.post_search, name='post_search'),
     # re_path(r'^$', views.JobListView.as_view(), name='job_list'),
+    path('search/', SearchResultsView.as_view(), name='search_results'),
     re_path(r'^$', views.job_list, name='job_list'),
-    # path('sendresume/', views.SendResumeView.as_view()),
 ]
-
-
-
-# from django.contrib import admin
-# from django.conf.urls import include
-# from django.urls import path, include, re_path
-
-
-# urlpatterns = [
-#     path('admin/', admin.site.urls),
-#     path('search/', include('haystack.urls')),
-#     re_path(r'^jobs/', include(('jobs.urls','jobs'),namespace='jobs.urls',)),
-# ]
-# #    re_path(r'^jobs/', include(('jobs.urls','jobs'),namespace='jobs.urls',)),

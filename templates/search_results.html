@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Search Results</h1>
+{% for job in object_list %}
+        <h2>
+            <a href="{{ job.get_absolute_url}}/jobs/{{job.hh_id}}">{{ job.name }}</a>
+        </h2>
+        <p>
+            Город {{ job.city }}
+        </p>
+    {% endfor %}
+{% endblock %}
