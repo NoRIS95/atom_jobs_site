@@ -9,7 +9,6 @@ class JobPageView(View):
 
 	def get(self, request, job_id):
 		job = Job.objects.get(hh_id=str(job_id))
-		# import pdb; pdb.set_trace()
 		return render(request=request, template_name=self.template_name, context={
 			'job_id': job_id,
 			'name': job.name,
