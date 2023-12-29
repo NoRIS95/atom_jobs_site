@@ -11,14 +11,16 @@ class SubmitFormView(CreateAPIView):
 	parser_classes = MultiPartParser, FormParser
 
 	def post(self, request, job_id):
-		name = request.data.get('name')
+		firstname = request.data.get('firstname')
 		surname = request.data.get('surname')
 		lastname = request.data.get('lastname')
-		e_mail = request.data.get('e_mail')
+		e_mail = request.data.get('email')
 		phone = request.data.get('phone')
-		text = request.data.get('text')
+		text = request.data.get('application_text')
 		cv = request.FILES.get('cv', False)
-		cv.name = f"{surname}_{name}.pdf"
+		cv.name = f"{firstname}_{lastname}.pdf"
 		job = Job.objects.get(hh_id=job_id)
-		Response.objects.create(name=name, surname=surname, lastname=lastname, e_mail=e_mail, phone=phone, job=job)
-		return redirect("/jobboard")
+		Response.objects.create(firstname=firstname, surname=surname, text=text,
+			lastname=lastname, e_mail=e_mail,
+			phone=phone, cv=cv, job=job)
+		return redirect("/")

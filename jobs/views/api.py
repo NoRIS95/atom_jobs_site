@@ -27,7 +27,6 @@ class JobAPIView(generics.ListAPIView):
 	serializer_class = JobSerializer
 
 	def get(self, request):
-		# requests.get('http://localhost:8000/api/v1/locations/')
 		queryset = Job.objects.all()
 		return Response(JobSerializer(queryset, many=True, context={'request': request}).data,
 			status=status.HTTP_200_OK)
@@ -36,7 +35,6 @@ class JobSearchAPIView(generics.ListAPIView):
 	serializer_class = JobSerializer
 
 	def get(self, request):
-		# requests.get('http://localhost:8000/api/v1/locations/')
 		queryset = self.get_queryset()
 		return Response(JobSerializer(queryset, many=True, context={'request': request}).data,
 			status=status.HTTP_200_OK)
@@ -54,12 +52,12 @@ class ResponseAPIView(generics.RetrieveUpdateDestroyAPIView, CreateModelMixin, L
 
 	def post(self, request):
 		serializer = self.serializer_class(data=request.data)
-		name = request.data.get('name')
+		firstname = request.data.get('firstname')
 		surname = request.data.get('surname')
 		lastname = request.data.get('lastname')
 		e_mail = request.data.get('e_mail')
 		phone = request.data.get('phone')
 		cv = request.FILES.get('cv', False)
-		cv.name = f"{surname}_{name}.pdf"
-		Response.objects.create(name=name, surname=surname, lastname=lastname, e_mail=e_mail, phone=phone)
+		cv.name = f"{surname}_{firstname}.pdf"
+		Response.objects.create(firstname=firstname, surname=surname, lastname=lastname, e_mail=e_mail, phone=phone)
 		return redirect("/jobboard", status=status.HTTP_200_OK)

@@ -10,4 +10,4 @@ class SearchForm(forms.Form):
 class ResumePostForm(forms.Form):
     class Meta:
         model = Request
-        fields = ['name', 'surname', 'lastname', 'e_mail', 'phone', 'text', 'job', 'cv' ]
+        fields = ['firstname', 'surname', 'lastname', 'e_mail', 'phone', 'text', 'job', 'cv' ]

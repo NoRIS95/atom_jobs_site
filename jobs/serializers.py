@@ -22,4 +22,4 @@ class JobSerializer(serializers.ModelSerializer):
 class ResponseAPISerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Response
-		fields = ('name', 'surname','lastname', 'e_mail', 'phone', 'text', 'job', 'cv')
+		fields = ('firstname', 'surname','lastname', 'e_mail', 'phone', 'text', 'job', 'cv')

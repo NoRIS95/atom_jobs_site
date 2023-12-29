@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from django.db import models
 
 def resume_file_path(instance, filename):
-	return f'resumes/{instance.hh_id}/{filename}'
+	return f'resumes/{instance.job.hh_id}/{filename}'
 
 # Create your models here.
 class Job(models.Model):
@@ -24,11 +24,11 @@ class Job(models.Model):
 		return "{}:{}".format(self.name, self.city)
 
 class Response(models.Model):
-	name = models.CharField(max_length=20)
+	firstname = models.CharField(max_length=20, null=True)
 	surname = models.CharField(max_length=30, null=True)
 	lastname = models.CharField(max_length=30, null=True)
 	e_mail = models.CharField(max_length=60, null=True)
 	phone = models.CharField(max_length=60, null=True)
 	text = models.TextField()
 	job = models.ForeignKey(Job, on_delete=models.CASCADE)
-	cv = models.FileField(upload_to='cv/')
+	cv = models.FileField(upload_to=resume_file_path)
